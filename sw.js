@@ -1,8 +1,15 @@
 /* Carnet de voyage · Japon — cache hors-ligne
-   À déposer à côté de index.html, à la racine du site.
-   Change le numéro de version pour forcer la mise à jour du cache. */
+   À déposer à côté de index.html, à la racine du dépôt.
 
-const CACHE = 'carnet-japon-v1';
+   Stratégie :
+   - la page elle-même est cherchée sur le réseau d'abord, pour que
+     chaque commit soit visible immédiatement ; le cache ne sert que
+     si le réseau ne répond pas.
+   - le reste (polices) reste en cache d'abord, ça ne change jamais.
+
+   Change le numéro de version pour repartir sur un cache propre. */
+
+const CACHE = 'carnet-japon-v2';
 
 self.addEventListener('install', e => {
   e.waitUntil(
@@ -21,25 +28,36 @@ self.addEventListener('activate', e => {
   );
 });
 
-/* Cache d'abord : le carnet doit s'ouvrir sans réseau.
-   Toute réponse valable est ajoutée au cache au passage (polices comprises). */
 self.addEventListener('fetch', e => {
   const req = e.request;
   if (req.method !== 'GET') return;
 
-  e.respondWith(
-    caches.match(req).then(cache => {
-      if (cache) return cache;
-      return fetch(req).then(res => {
-        if (res && (res.ok || res.type === 'opaque')) {
+  const estPage = req.mode === 'navigate' ||
+                  (req.headers.get('accept') || '').includes('text/html');
+
+  if (estPage) {
+    // réseau d'abord : la dernière version l'emporte toujours
+    e.respondWith(
+      fetch(req)
+        .then(res => {
           const copie = res.clone();
           caches.open(CACHE).then(c => c.put(req, copie)).catch(() => {});
-        }
-        return res;
-      }).catch(() => {
-        if (req.mode === 'navigate') return caches.match('./') || caches.match('./index.html');
-        return new Response('', { status: 504, statusText: 'hors ligne' });
-      });
-    })
+          return res;
+        })
+        .catch(() => caches.match(req)
+          .then(r => r || caches.match('./') || caches.match('./index.html')))
+    );
+    return;
+  }
+
+  // le reste : cache d'abord
+  e.respondWith(
+    caches.match(req).then(cache => cache || fetch(req).then(res => {
+      if (res && (res.ok || res.type === 'opaque')) {
+        const copie = res.clone();
+        caches.open(CACHE).then(c => c.put(req, copie)).catch(() => {});
+      }
+      return res;
+    }).catch(() => new Response('', { status: 504, statusText: 'hors ligne' })))
   );
 });
