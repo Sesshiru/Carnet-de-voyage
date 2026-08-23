@@ -9,7 +9,7 @@
 
    Change le numéro de version pour repartir sur un cache propre. */
 
-const CACHE = 'carnet-japon-v2';
+const CACHE = 'carnet-japon-v3';
 
 self.addEventListener('install', e => {
   e.waitUntil(

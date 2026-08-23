@@ -33,8 +33,11 @@
   --fond:#EFE9DC;   /* le bureau : neutre, jamais teinté par la palette */
   --liv1:#F8F3E8; --liv2:#F2EBDA; --liv3:#EAE1CD;
   --dos1:#DCD2B9; --dos2:#EDE5D2; --sig:#B4534A;
+  --crans:radial-gradient(circle 9px at 100% 50%, rgba(0,0,0,0) 97%, #000 100%);
+  --trait:#3D3831;
+  --halo:#FDFBF4;
   --r:14px;
-  --ombre:0 18px 40px -18px rgba(58,55,51,.35), 0 2px 6px rgba(58,55,51,.06);
+  --ombre:6px 7px 0 rgba(58,55,51,.16), 0 1px 2px rgba(58,55,51,.24);
   --f-disp:'Quicksand', ui-rounded, system-ui, sans-serif;
   --f-main:'Patrick Hand', 'Quicksand', ui-rounded, system-ui, sans-serif;
   --f-hand:'Caveat', cursive;
@@ -58,16 +61,27 @@ input,textarea,select{font:inherit;color:inherit;border-radius:0}
 
 /* ---------- carnet ---------- */
 .carnet{
-  max-width:1180px;margin:0 auto;position:relative;
-  display:grid;grid-template-columns:1fr 1fr;gap:6px;align-items:stretch;
-  grid-auto-rows:1fr;
+  max-width:1340px;margin:0 auto;position:relative;
   height:calc(100vh - 56px);height:calc(100dvh - 56px);min-height:460px;
-  padding-right:66px;
+  padding-right:100px;
+}
+.pages{
+  display:grid;grid-template-columns:1fr 1fr;gap:0;align-items:stretch;
+  grid-auto-rows:1fr;height:100%;position:relative;
+  filter:drop-shadow(7px 8px 0 rgba(58,55,51,.15)) drop-shadow(0 1px 1px rgba(58,55,51,.28));
+}
+/* la reliure : creux central et surpiqûre */
+.pages::after{
+  content:"";position:absolute;top:0;bottom:0;left:50%;width:48px;
+  margin-left:-24px;pointer-events:none;z-index:4;
+  background:linear-gradient(90deg,
+    rgba(58,55,51,0) 0%, rgba(58,55,51,.02) 26%, rgba(58,55,51,.06) 42%,
+    rgba(58,55,51,.12) 48%, rgba(58,55,51,.17) 50%, rgba(58,55,51,.12) 52%,
+    rgba(58,55,51,.06) 58%, rgba(58,55,51,.02) 74%, rgba(58,55,51,0) 100%);
 }
 .page{
-  border-radius:var(--r);box-shadow:var(--ombre);position:relative;padding:0;
-  height:calc(100vh - 136px);height:calc(100dvh - 136px);min-height:460px;
-  align-self:stretch;
+  border-radius:var(--r);position:relative;padding:0;
+  height:100%;align-self:stretch;
 }
 .carnet>.page{height:100%}
 .feuille{
@@ -79,29 +93,38 @@ input,textarea,select{font:inherit;color:inherit;border-radius:0}
 .feuille::-webkit-scrollbar{width:7px}
 .feuille::-webkit-scrollbar-thumb{background:rgba(69,63,55,.2);border-radius:99px}
 .feuille::-webkit-scrollbar-track{background:transparent}
-.page-g{background:var(--papier);border:1px solid var(--papier-bord);overflow:hidden}
+.page-d .feuille{padding-right:38px}
+.page-g{background:var(--papier);border:1px solid var(--papier-bord);border-right:none;border-radius:var(--r) 0 0 var(--r);overflow:hidden}
+.page-d .feuille{padding-right:30px}
 .page-d{
   overflow:visible;
   background:
     repeating-linear-gradient(to right, transparent 0 25px, var(--grille-ligne) 25px 26px),
     repeating-linear-gradient(to bottom, transparent 0 25px, var(--grille-ligne) 25px 26px),
     var(--grille);
-  border:1px solid var(--grille-bord);
+  border:1px solid var(--grille-bord);border-left:none;border-radius:0 var(--r) var(--r) 0;
 }
-.onglets{position:absolute;top:34px;right:-66px;display:flex;flex-direction:column;gap:8px;z-index:5}
+.onglets{position:absolute;top:30px;right:0;display:flex;flex-direction:column;gap:9px;z-index:5}
+.onglet-o{display:block;filter:drop-shadow(1px 2px 4px rgba(58,55,51,.22))}
 .onglet{
-  width:78px;padding:9px 8px 9px 12px;border:none;border-radius:0 10px 10px 0;
-  color:var(--encre-pale);text-align:left;
-  font-family:var(--f-disp);font-weight:500;font-size:11px;letter-spacing:.06em;line-height:1.15;
-  box-shadow:2px 2px 5px rgba(58,55,51,.10);
-  transition:transform .16s ease, background .16s ease, color .16s ease;
+  --tt:#E7EDF3;
+  position:relative;width:94px;min-height:50px;
+  padding:8px 17px 8px 11px;text-align:left;
+  border:3px solid var(--halo);border-radius:12px;
+  background-color:var(--tt);background-clip:padding-box;
+  box-shadow:inset 0 0 0 1.8px var(--trait);
+  color:#5A544B;
+  font-family:var(--f-disp);font-weight:500;font-size:10px;letter-spacing:.03em;line-height:1.15;
+  -webkit-mask:var(--crans);mask:var(--crans);
+  transition:transform .16s ease, background-color .16s ease, color .16s ease;
 }
 .ico{display:block;width:20px;height:20px;margin:0 0 4px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
 .ico-rouge{stroke:#C0564C;stroke-width:1.8}
-.onglet-x{color:#A5574F}
-.onglet:hover{transform:translateX(3px)}
-.onglet.on{background:var(--papier);color:var(--encre);transform:translateX(6px);box-shadow:3px 3px 8px rgba(58,55,51,.14)}
-.onglet:focus-visible{outline:2px solid var(--bleu);outline-offset:2px}
+.onglet-x{--tt:#F2D8D4;color:#A5574F}
+.onglet{transform:translateX(-7px)}
+.onglet:hover{transform:translateX(-3px)}
+.onglet.on{--tt:var(--papier);color:var(--encre);transform:translateX(0)}
+.onglet:focus-visible{outline:2px solid var(--bleu);outline-offset:3px}
 
 .tete{display:flex;align-items:baseline;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:4px}
 .tete h1{font-family:var(--f-disp);font-weight:500;font-size:30px;margin:0;letter-spacing:.01em}
@@ -165,8 +188,8 @@ input[type=date].champ,input[type=time].champ{min-height:32px}
 .jour .auj-lbl{display:inline-block;font-family:var(--f-disp);font-weight:500;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--bleu);border:1px solid #C2D3E1;border-radius:99px;padding:1px 6px;margin-top:4px}
 .jour .pastille{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--etoile);margin-right:5px;vertical-align:2px}
 
-.carte{width:100%;text-align:left;background:#fff;border:1px solid var(--papier-bord);border-radius:12px;padding:12px 14px;margin-bottom:9px;transition:transform .14s, box-shadow .14s}
-.carte:hover{transform:translateY(-1px);box-shadow:0 6px 14px -8px rgba(58,55,51,.4)}
+.carte{width:100%;text-align:left;background:#fff;border:1px solid var(--papier-bord);border-radius:12px;padding:12px 14px;margin-bottom:9px;box-shadow:3px 4px 0 rgba(58,55,51,.13);transition:transform .14s, box-shadow .14s}
+.carte:hover{transform:translateY(-1px);box-shadow:5px 6px 0 rgba(58,55,51,.17)}
 .carte.on{border-color:var(--bleu);box-shadow:inset 3px 0 0 var(--bleu)}
 .carte .nom{font-size:19px}
 .carte .det{font-family:var(--f-disp);font-size:12.5px;color:var(--encre-pale);margin-top:3px}
@@ -197,7 +220,42 @@ input[type=date].champ,input[type=time].champ{min-height:32px}
 .ligne-dep input:focus{outline:none;border-bottom-color:var(--bleu)}
 .ligne-dep .yen{text-align:right}
 .mini{font-family:var(--f-disp);font-size:13px;color:var(--encre-pale)}
-.pot{display:flex;justify-content:space-between;font-size:16.5px;padding:7px 0;border-bottom:1px dotted #E0E9F0}
+.prep{align-items:flex-start;padding:9px 4px;border-bottom:1px dashed var(--papier-bord);border-left:3px solid transparent;padding-left:8px;margin-left:-8px;border-radius:3px}
+.prep:last-of-type{border-bottom:none}
+.prep-corps{flex:1;min-width:0}
+.prep-t{width:100%;background:transparent;border:none;font-size:16.5px;padding:1px 0;line-height:1.35}
+.prep-t:focus{outline:none;border-bottom:1px solid var(--bleu)}
+.prep-bas{display:flex;align-items:center;gap:9px;margin-top:3px;flex-wrap:wrap}
+.prep-j{font-family:var(--f-disp);font-weight:500;font-size:11px;letter-spacing:.06em;color:var(--encre-pale)}
+.prep-jn{width:2.6em;background:transparent;border:none;border-bottom:1px dotted var(--papier-bord);font-family:var(--f-disp);font-size:11px;color:var(--encre-pale);padding:0}
+.prep-jn:focus{outline:none;color:var(--encre);border-bottom-color:var(--bleu)}
+.prep-d{font-family:var(--f-disp);font-size:11.5px;color:var(--encre-pale)}
+.prep-etat{font-family:var(--f-disp);font-weight:500;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;border-radius:99px;padding:2px 8px}
+.prep.bientot{border-left-color:#C9AE6A;background:rgba(201,174,106,.07)}
+.prep.bientot .prep-etat{background:#F3E9CE;color:#8A6D28}
+.prep.retard{border-left-color:var(--sumi);background:rgba(180,83,74,.06)}
+.prep.retard .prep-etat{background:#F3DCD9;color:#A5473E}
+.prep.fait .prep-t{color:var(--encre-pale);text-decoration:line-through;text-decoration-thickness:1px}
+.prep.fait{opacity:.62}
+.dep{background:rgba(255,255,255,.72);border:1px solid #E2EAF2;border-radius:12px;padding:10px 12px 11px;margin-bottom:10px}
+.dep-tete{display:flex;align-items:center;gap:9px;margin-bottom:4px}
+.etiq{
+  position:relative;display:inline-flex;align-items:center;white-space:nowrap;
+  border-radius:99px;padding:4px 11px;
+  font-family:var(--f-disp);font-weight:600;font-size:10px;letter-spacing:.12em;text-transform:uppercase;
+}
+.etiq select{position:absolute;inset:0;width:100%;height:100%;opacity:0;border:none;padding:0;margin:0;-webkit-appearance:none;appearance:none}
+.etiq-fixe{pointer-events:none}
+.dep-date{flex:1;min-width:0;background:transparent;border:none;font-family:var(--f-disp);font-size:12.5px;color:var(--encre-pale);padding:2px 0}
+.dep-date:focus{outline:none;color:var(--encre)}
+.dep-corps{display:flex;align-items:baseline;gap:8px}
+.dep-label{flex:1;min-width:0;background:transparent;border:none;border-bottom:1px solid #D3E0EA;font-size:17px;padding:4px 0}
+.dep-yen{width:98px;text-align:right;background:transparent;border:none;border-bottom:1px solid #D3E0EA;font-family:var(--f-disp);font-size:16px;padding:4px 0}
+.dep-label:focus,.dep-yen:focus{outline:none;border-bottom-color:var(--bleu)}
+.dep-corps i{font-style:normal;color:var(--encre-pale);font-size:13px}
+.dep-eur{text-align:right;font-family:var(--f-disp);font-size:11.5px;color:var(--encre-pale);margin-top:3px}
+.num{font-family:var(--f-disp)}
+.pot{display:flex;justify-content:space-between;align-items:center;font-size:16.5px;padding:7px 0;border-bottom:1px dotted #E0E9F0}
 .pot:last-child{border-bottom:none}
 
 .bloc{background:rgba(255,255,255,.7);border:1px solid var(--papier-bord);border-radius:12px;padding:13px 15px;margin-bottom:11px}
@@ -214,6 +272,88 @@ input[type=date].champ,input[type=time].champ{min-height:32px}
 .vide b{display:block;color:var(--encre);font-weight:400;margin-bottom:3px}
 .barre-bas{display:none}
 
+/* ---------- billets d'avion ---------- */
+.billets{display:flex;flex-direction:column;gap:14px}
+.billet{
+  display:flex;width:100%;padding:0;border:none;text-align:left;
+  background:#FDFBF4;border-radius:14px;overflow:hidden;
+  box-shadow:5px 6px 0 rgba(58,55,51,.15), 0 1px 2px rgba(58,55,51,.2), inset 0 0 0 1px rgba(58,55,51,.09);
+  transition:transform .16s ease, box-shadow .16s ease;
+  font-family:var(--f-disp);color:#3A3733;
+}
+button.billet:hover{transform:translateY(-3px);box-shadow:8px 10px 0 rgba(58,55,51,.17), 0 1px 2px rgba(58,55,51,.22), inset 0 0 0 1px rgba(58,55,51,.09)}
+button.billet:focus-visible{outline:2px solid var(--bleu);outline-offset:3px}
+.bl-main{flex:1;min-width:0;display:flex;flex-direction:column}
+.bl-bande{display:flex;align-items:center;gap:10px;padding:9px 12px}
+.bl-rond{
+  width:30px;height:30px;flex:none;border-radius:50%;background:#FDFBF4;
+  display:grid;place-items:center;font-size:15px;color:#3A3733;
+}
+.bl-tete{flex:1;min-width:0;line-height:1.15}
+.bl-tete b{display:block;font-weight:700;font-size:12.5px;letter-spacing:.07em;color:#2C2A26}
+.bl-nom{display:block;font-weight:600;font-size:13px;letter-spacing:.04em;color:#2C2A26}
+.bl-cie{font-weight:600;font-size:11.5px;letter-spacing:.04em;color:#FDFBF4;text-align:right;max-width:38%}
+.bl-mini{display:block;font-size:8px;letter-spacing:.16em;text-transform:uppercase;opacity:.62;font-weight:600;margin-bottom:1px}
+.bl-corps{padding:11px 12px 12px}
+.bl-route{display:flex;align-items:center;gap:10px;font-weight:500;font-size:23px;letter-spacing:.02em;line-height:1}
+.bl-route i{font-style:normal;font-size:16px;opacity:.5}
+.bl-villes{font-size:10.5px;color:#7C766B;margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bl-grille{display:grid;grid-template-columns:repeat(3,1fr);gap:9px 8px;margin-top:11px}
+.bl-grille b{font-weight:600;font-size:13px;letter-spacing:.02em}
+.bl-bas{display:flex;align-items:flex-end;gap:12px;margin-top:12px}
+.bl-bas>div:first-child{flex:none}
+.bl-ref{font-weight:700;font-size:14px;letter-spacing:.08em}
+.bl-cb{flex:1;min-width:0;opacity:.85}
+.cb{width:100%;height:22px;display:block}
+.bl-souche{
+  width:104px;flex:none;padding:11px 10px;position:relative;overflow:hidden;
+  display:flex;flex-direction:column;gap:9px;
+  border-left:2px dashed rgba(58,55,51,.22);
+}
+.bl-souche b{font-weight:600;font-size:14px}
+.bl-feuille{position:absolute;right:-14px;top:-10px;width:64px;opacity:.18;pointer-events:none}
+.bl-feuille svg{width:100%;height:auto}
+.bl-qr{margin-top:auto;width:46px}
+.qr{width:100%;height:auto;display:block}
+
+/* plein écran */
+.plein{position:fixed;inset:0;z-index:60;display:grid;place-items:start center;padding:0}
+.plein[hidden]{display:none}
+.plein-fond{position:absolute;inset:0;border:none;background:rgba(46,42,37,.62);backdrop-filter:blur(3px);animation:fondu .2s ease both}
+.plein-boite{
+  position:relative;z-index:1;width:min(720px,100%);
+  max-height:100dvh;overflow-y:auto;overscroll-behavior:contain;
+  padding:calc(46px + env(safe-area-inset-top)) 18px calc(30px + env(safe-area-inset-bottom));
+  animation:monte .26s cubic-bezier(.2,.7,.3,1) both;
+}
+.plein-x{
+  position:absolute;top:calc(10px + env(safe-area-inset-top));right:14px;
+  width:40px;height:40px;border:none;border-radius:50%;
+  background:rgba(255,255,255,.9);color:#3A3733;font-size:22px;line-height:1;
+  box-shadow:0 4px 12px rgba(0,0,0,.2);
+}
+.billet.grand{box-shadow:14px 17px 0 rgba(20,17,14,.30), 0 2px 4px rgba(0,0,0,.3)}
+.billet.grand .bl-bande{padding:13px 16px}
+.billet.grand .bl-rond{width:38px;height:38px;font-size:19px}
+.billet.grand .bl-tete b{font-size:15px}
+.billet.grand .bl-nom{font-size:16px}
+.billet.grand .bl-corps{padding:15px 16px 16px}
+.billet.grand .bl-route{font-size:32px}
+.billet.grand .bl-villes{font-size:12px}
+.billet.grand .bl-grille b{font-size:15px}
+.billet.grand .bl-mini{font-size:8.5px}
+.billet.grand .bl-souche{width:132px;padding:15px 13px}
+.billet.grand .bl-souche b{font-size:16px}
+.billet.grand .bl-qr{width:62px}
+.plein-form{
+  background:var(--papier);border:1px solid var(--papier-bord);border-radius:14px;
+  padding:18px 18px 20px;margin-top:16px;
+  box-shadow:10px 12px 0 rgba(20,17,14,.26), 0 2px 3px rgba(0,0,0,.28);
+}
+body.fige{overflow:hidden}
+@keyframes fondu{from{opacity:0}to{opacity:1}}
+@keyframes monte{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+
 /* ---------- couverture ---------- */
 .couv{position:fixed;inset:0;z-index:40;display:grid;place-items:center;padding:calc(26px + env(safe-area-inset-top)) 20px 26px;overflow:auto}
 body.ouvert .couv{display:none}
@@ -225,7 +365,7 @@ body:not(.ouvert) .barre-bas{display:none}
   padding:30px 26px;text-align:center;
   background:linear-gradient(155deg,var(--liv1) 0%,var(--liv2) 55%,var(--liv3) 100%);
   border:none;border-radius:5px 15px 15px 5px;
-  box-shadow:0 34px 62px -26px rgba(58,55,51,.6),0 3px 10px rgba(58,55,51,.12),inset 0 0 0 1px rgba(58,55,51,.06);
+  box-shadow:12px 15px 0 rgba(58,55,51,.18),0 2px 4px rgba(58,55,51,.28),inset 0 0 0 1px rgba(58,55,51,.08);
   transition:transform .3s cubic-bezier(.2,.7,.3,1);
   animation:poser .5s cubic-bezier(.2,.7,.3,1) both;
 }
@@ -281,9 +421,15 @@ body:not(.ouvert) .barre-bas{display:none}
 /* ---------- téléphone ---------- */
 @media (max-width:900px){
   body{padding:calc(12px + env(safe-area-inset-top)) 10px 92px}
-  .carnet{grid-template-columns:1fr;gap:12px;padding-right:0;height:calc(100vh - 118px);height:calc(100dvh - 118px);min-height:0}
-  .page{height:calc(100vh - 118px);height:calc(100dvh - 118px);min-height:0;box-shadow:0 10px 26px -16px rgba(58,55,51,.4)}
+  .carnet{padding-right:0;height:calc(100vh - 118px);height:calc(100dvh - 118px);min-height:0}
+  .pages{display:block;filter:none;height:100%}
+  .pages::before,.pages::after{display:none}
+  .page-g{border-right:1px solid var(--papier-bord);border-radius:var(--r)}
+  .page-d{border-left:1px solid var(--grille-bord);border-radius:var(--r)}
+  .page{height:100%;min-height:0;
+    box-shadow:5px 6px 0 rgba(58,55,51,.15), 0 1px 2px rgba(58,55,51,.22)}
   .feuille{padding:18px 16px 26px}
+  .page-d .feuille{padding-right:16px}
   .rang-suite{display:flex;margin-top:26px;justify-content:center}
   .onglets{display:none}
   .etoile{display:none}
@@ -316,25 +462,26 @@ body:not(.ouvert) .barre-bas{display:none}
   .jour{padding:14px 6px}
 
   .barre-bas{
-    display:flex;align-items:flex-end;gap:3px;
+    display:flex;align-items:flex-end;gap:5px;
     position:fixed;left:0;right:0;bottom:0;z-index:20;
     background:linear-gradient(to top, var(--fond) 76%, rgba(239,233,220,0));
-    padding:14px 5px calc(6px + env(safe-area-inset-bottom));
+    padding:14px 6px calc(7px + env(safe-area-inset-bottom));
   }
   .barre-bas button{
-    flex:1;border:none;border-radius:13px 13px 5px 5px;
-    padding:9px 2px 8px;min-height:54px;
-    font-family:var(--f-disp);font-weight:500;font-size:10px;
-    color:var(--encre-pale);line-height:1.2;
-    box-shadow:0 -1px 3px rgba(58,55,51,.07);
+    --tt:#E7EDF3;
+    flex:1;min-width:0;min-height:52px;padding:7px 2px 6px;
+    border:2.5px solid var(--halo);border-radius:11px;
+    background-color:var(--tt);background-clip:padding-box;
+    box-shadow:inset 0 0 0 1.7px var(--trait), 0 2px 5px rgba(58,55,51,.18);
+    font-family:var(--f-disp);font-weight:500;font-size:9px;
+    color:#5A544B;line-height:1.2;
     transform:translateY(5px);
-    transition:transform .16s ease, box-shadow .16s ease;
+    transition:transform .16s ease;
   }
-  .barre-bas .ico{width:21px;height:21px;margin:0 auto 4px}
-  .barre-bas .onglet-x{color:#A5574F}
+  .barre-bas .ico{width:20px;height:20px;margin:2px auto 3px}
+  .barre-bas .onglet-x{--tt:#F2D8D4;color:#A5574F}
   .barre-bas button.on{
-    background:var(--papier);color:var(--encre);
-    transform:translateY(0);box-shadow:0 -4px 10px -2px rgba(58,55,51,.18);
+    --tt:var(--papier);color:var(--encre);transform:translateY(-1px);
   }
 }
 
@@ -372,11 +519,23 @@ body:not(.ouvert) .barre-bas{display:none}
 </div>
 
 <div class="carnet" id="carnet">
-  <section class="page page-g"><div class="feuille" id="pg"></div></section>
-  <section class="page page-d"><nav class="onglets" id="onglets"></nav><div class="feuille" id="pd"></div></section>
+  <div class="pages">
+    <section class="page page-g"><div class="feuille" id="pg"></div></section>
+    <section class="page page-d"><div class="feuille" id="pd"></div></section>
+  </div>
+  <nav class="onglets" id="onglets"></nav>
 </div>
 
 <nav class="barre-bas" id="barreBas"></nav>
+
+<div class="plein" id="plein" hidden>
+  <button class="plein-fond" data-act="fermer-vol" aria-label="Fermer"></button>
+  <div class="plein-boite" role="dialog" aria-label="Billet">
+    <button class="plein-x" data-act="fermer-vol" aria-label="Fermer">×</button>
+    <div id="pleinBillet"></div>
+    <div class="plein-form" id="pleinForm"></div>
+  </div>
+</div>
 
 <script>
 /* =======================================================
@@ -388,6 +547,7 @@ const SECTIONS = [
   {id:'voyage',    nom:'Voyage', titre:'Voyage',     liste:'Voyage',       suite:'Les vols',      teinte:'#DEE9F3'},
   {id:'hotels',    nom:'Hôtels', titre:'Hôtels',     liste:'Hébergements', items:true,            teinte:'#DFE9DF'},
   {id:'itineraire',nom:'Jours',  titre:'Itinéraire', liste:'Les jours',    items:true,            teinte:'#F2E1E1'},
+  {id:'avant',     nom:'Prépa',  titre:'Avant de partir', liste:'Échéances', suite:'Mes documents', teinte:'#F1E4D9'},
   {id:'valise',    nom:'Valise', titre:'Valise',     liste:'Catégories',   items:true,            teinte:'#E7E1F0'},
   {id:'budget',    nom:'Budget', titre:'Budget',     liste:'Budget',       suite:'Les dépenses',  teinte:'#F3EBD3'},
   {id:'infos',     nom:'Infos',  titre:'Sur place',  liste:'Sur place',    suite:'Quelques mots', teinte:'#E1E8ED'}
@@ -400,13 +560,16 @@ const ICONES = {
   itineraire:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.6 5.4h18.8"/><path d="M4.6 8.6h14.8"/><path d="M7.2 5.4v14.2"/><path d="M16.8 5.4v14.2"/></svg>`,
   valise:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.4" y="7.8" width="17.2" height="12" rx="2"/><path d="M9.2 7.8V5.6h5.6v2.2"/><path d="M3.4 13.8h17.2"/></svg>`,
   budget:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M7.6 4.8 12 11.4l4.4-6.6"/><path d="M12 11.4v7.8"/><path d="M8.2 13.4h7.6"/><path d="M8.2 16.4h7.6"/></svg>`,
+  avant:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.6" y="5.4" width="16.8" height="14.4" rx="2.2"/><path d="M8 3.4v3.4"/><path d="M16 3.4v3.4"/><path d="M3.6 10h16.8"/><path d="M9 14.6l2.2 2.2 4-4.2"/></svg>`,
   infos:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.2 12.4a8.8 8.8 0 0 1 17.6 0z"/><path d="M12 12.4v5.6a2.2 2.2 0 0 0 4.4 0"/><path d="M12 3.6v1.2"/></svg>`,
   fermer:`<svg class="ico ico-rouge" viewBox="0 0 24 24" aria-hidden="true"><path d="M5.6 5.6 18.4 18.4"/><path d="M18.4 5.6 5.6 18.4"/></svg>`
 };
-const ONGLET_FERMER = `<button class="onglet-x" data-act="fermer-carnet" style="background:#F3DCD9">${ICONES.fermer}<span>Fermer</span></button>`;
+const ONGLET_FERMER = `<button class="onglet-x" data-act="fermer-carnet" style="--tt:#F2D8D4">${ICONES.fermer}<span>Fermer</span></button>`;
 const FICHES = [
+  {cle:'formalites',t:'Arrivée & formalités'},
   {cle:'transport', t:'Se déplacer'},
   {cle:'argent',    t:'Argent'},
+  {cle:'sante',     t:'Médicaments & santé'},
   {cle:'usages',    t:'Usages'},
   {cle:'urgences',  t:'En cas de pépin', rouge:true}
 ];
@@ -442,12 +605,10 @@ const PALETTES = [
 
 const DEFAUT = {
   section:'voyage', livre:'creme', vue:'liste', jourActif:null, hotelActif:0, valiseActive:0, infoEdit:null,
-  voyage:{titre:'Japon', depart:'', retour:'', villes:'Tokyo · Kyoto · Osaka', notes:''},
-  vols:[
-    {sens:'Aller',  num:'', cie:'', de:'', vers:'', date:'', hDep:'', hArr:'', terminal:'', siege:'', ref:'', notes:''},
-    {sens:'Retour', num:'', cie:'', de:'', vers:'', date:'', hDep:'', hArr:'', terminal:'', siege:'', ref:'', notes:''}
-  ],
-  hotels:[], jours:{}, taux:0.0060, budgetPrevu:0, depenses:[],
+  voyage:{titre:'Japon', passager:'', depart:'', retour:'', villes:'Tokyo · Kyoto · Osaka', notes:''},
+  vols:[],
+  volOuvert:null,
+  hotels:[], jours:{}, taux:'0,00539', budgetPrevu:'', depenses:[],
   valise:[
     {cat:'Papiers', items:[
       {t:'Passeport (validité 6 mois)',f:false},
@@ -482,11 +643,30 @@ const DEFAUT = {
       {t:'Place libre dans la valise pour le retour',f:false}
     ]}
   ],
+  docs:{passeport:'',expiration:'',assurance:'',police:'',telAssur:'',opposition:'',vjw:'',esim:'',contact:'',notes:''},
+  prepa:[
+    {j:90,t:'Vérifier la validité du passeport — 6 mois après la date de retour',f:false},
+    {j:60,t:'Réserver musée Ghibli, teamLab, Shibuya Sky : les places partent vite',f:false},
+    {j:45,t:'Boucler l’itinéraire et réserver les hébergements',f:false},
+    {j:35,t:'Vérifier la composition des médicaments emportés (codéine, pseudoéphédrine)',f:false},
+    {j:30,t:'Demander le certificat Yunyu Kakunin-sho si nécessaire',f:false},
+    {j:30,t:'Souscrire l’assurance voyage',f:false},
+    {j:21,t:'Commander l’eSIM ou réserver le pocket wifi',f:false},
+    {j:14,t:'Remplir Visit Japan Web — immigration et douane',f:false},
+    {j:14,t:'Réserver les places de Shinkansen sur les trajets à date fixe',f:false},
+    {j:10,t:'Prévenir la banque et vérifier les plafonds de retrait',f:false},
+    {j:7, t:'Commander des yens en espèces',f:false},
+    {j:3, t:'Captures d’écran : QR codes, réservations, billets',f:false},
+    {j:2, t:'Enregistrement en ligne du vol',f:false},
+    {j:1, t:'Adresses des hôtels en japonais, batterie externe chargée',f:false}
+  ],
   infos:{
-    transport:"Carte IC (Suica / Pasmo) : à charger dès l’arrivée, elle passe dans le métro, les bus et les konbini.\nJR Pass : rentable surtout si tu fais plusieurs longs trajets en Shinkansen. À comparer avec des billets à l’unité.\nGoogle Maps donne les horaires de train à la minute, quai compris.",
-    argent:"Le pays reste très attaché aux espèces. Les distributeurs des 7-Eleven et des bureaux de poste acceptent les cartes étrangères.\nPas de pourboire, nulle part.\nOn pose l’argent sur la petite coupelle près de la caisse, pas dans la main.",
+    formalites:"Visit Japan Web (vjw.digital.go.jp) : immigration et douane remplies en ligne, un QR code à présenter à l’arrivée. À terminer au moins 6 h avant l’atterrissage.\nÀ Haneda, Narita et Kansai, une borne unique lit le passeport et le code en une seule fois.\nGarder une capture d’écran : le réseau peut manquer en descendant de l’avion.\nCe n’est pas obligatoire — les formulaires papier sont toujours distribués dans l’avion.",
+    sante:"Codéine et pseudoéphédrine sont interdites : Codoliprane, Néo-Codion, Actifed Rhume restent à la maison. Vérifier la composition, pas la marque.\nUne ordonnance française n’a aucune valeur juridique au Japon.\nAu-delà d’un mois de traitement, ou pour une substance contrôlée : certificat Yunyu Kakunin-sho, à demander au moins 14 jours avant.\nGarder les boîtes d’origine et une ordonnance traduite en anglais.\nLes pharmacies et drugstores sont partout pour la bobologie.",
+    transport:"Carte IC (Suica / Pasmo) : à charger dès l’arrivée, elle passe dans le métro, les bus et les konbini.\nJR Pass : rentable surtout si tu fais plusieurs longs trajets en Shinkansen. À comparer avec des billets à l’unité.\nGoogle Maps donne les horaires de train à la minute, quai compris.\nLe dernier train passe vers minuit dans les grandes villes : après, c’est le taxi, et il est cher.\nTakkyubin : faire suivre sa valise d’un hôtel au suivant pour quelques milliers de yens.",
+    argent:"Détaxe : depuis le 1er novembre 2026, plus d’exonération en caisse. On garde les reçus et on se fait rembourser à l’aéroport au départ.\nLe pays reste très attaché aux espèces. Les distributeurs des 7-Eleven et des bureaux de poste acceptent les cartes étrangères.\nPas de pourboire, nulle part.\nOn pose l’argent sur la petite coupelle près de la caisse, pas dans la main.",
     urgences:"Police : 110\nPompiers / ambulance : 119\nAmbassade de France à Tokyo : +81 3 5798 6000\nNuméro de ma carte bancaire en cas de perte : ",
-    usages:"Se déchausser à l’entrée des maisons, ryokan, temples, certains restaurants.\nOn ne mange pas en marchant, on ne téléphone pas dans le train.\nTatouages parfois refusés dans les onsen : vérifier avant.",
+    usages:"Se déchausser à l’entrée des maisons, ryokan, temples, certains restaurants.\nOn ne mange pas en marchant, on ne téléphone pas dans le train.\nTatouages parfois refusés dans les onsen : vérifier avant.\nBeaucoup de musées ferment le lundi.\nDécalage horaire : +7 h en été, +8 h en hiver.",
     notes:''
   },
   motsJP:[
@@ -506,7 +686,9 @@ try{
   const brut = localStorage.getItem(CLE);
   S = brut ? fusion(structuredClone(DEFAUT), JSON.parse(brut)) : structuredClone(DEFAUT);
 }catch(e){ S = structuredClone(DEFAUT); }
-S.vue = 'liste'; S.infoEdit = null;
+S.vue = 'liste'; S.infoEdit = null; S.volOuvert = null;
+// l'ancien taux par défaut était faux : on corrige s'il n'a jamais été touché
+if(String(S.taux)==='0.006' || String(S.taux)==='0.0060') S.taux='0,00539';
 
 function fusion(base, sauve){
   for(const k in sauve){
@@ -584,23 +766,28 @@ function barreRetour(){
 const VUES = {};
 
 /* --- 1. Voyage --- */
+function resumeVoyage(){
+  const a=S.voyage.depart;
+  const tampon=(haut,n,bas)=>`<div class="hanko"><div class="hanko-in">${haut?`<span class="jp">${haut}</span>`:''}<span class="n">${n}</span><span class="lbl">${bas}</span></div></div>`;
+  let h;
+  if(!a) h=tampon('','?','départ');
+  else {
+    const n=joursEntre(aujourdhui(),a);
+    if(n>0) h=tampon('encore',n,`jour${n>1?'s':''}`);
+    else if(n===0) h=tampon('','0','c’est parti');
+    else if(enVoyage()) h=tampon('',Math.abs(n)+1,'e jour');
+    else { const t=(a&&S.voyage.retour)?joursEntre(a,S.voyage.retour)+1:0; h=tampon('',t,'jours vécus'); }
+  }
+  const j=(S.voyage.depart&&S.voyage.retour&&joursEntre(S.voyage.depart,S.voyage.retour)>=0)?joursEntre(S.voyage.depart,S.voyage.retour)+1:null;
+  return h+
+    `<p class="main" style="text-align:center;margin:14px 0 20px">${j?`${j} jours au Japon`:'ajoute tes dates pour lancer le compte à rebours'}</p>
+     ${enVoyage()?`<div class="rang" style="justify-content:center;margin-bottom:6px"><button class="btn btn-b" data-act="aujourdhui">Voir la journée d’aujourd’hui</button></div>`:''}`;
+}
+
 VUES.voyage = {
   gauche(){
-    const a=S.voyage.depart;
-    let h;
-    const tampon=(haut,n,bas)=>`<div class="hanko"><div class="hanko-in">${haut?`<span class="jp">${haut}</span>`:''}<span class="n">${n}</span><span class="lbl">${bas}</span></div></div>`;
-    if(!a) h=tampon('','?','départ');
-    else {
-      const n=joursEntre(aujourdhui(),a);
-      if(n>0) h=tampon('encore',n,`jour${n>1?'s':''}`);
-      else if(n===0) h=tampon('','0','c’est parti');
-      else if(enVoyage()) h=tampon('',Math.abs(n)+1,'e jour');
-      else { const nb=(a&&S.voyage.retour)?joursEntre(a,S.voyage.retour)+1:0; h=tampon('',nb,'jours vécus'); }
-    }
-    const nb=(S.voyage.depart&&S.voyage.retour&&joursEntre(S.voyage.depart,S.voyage.retour)>=0)?joursEntre(S.voyage.depart,S.voyage.retour)+1:null;
-    return enTete()+h+
-    `<p class="main" style="text-align:center;margin:14px 0 20px">${nb?`${nb} jours au Japon`:'ajoute tes dates pour lancer le compte à rebours'}</p>
-     ${enVoyage()?`<div class="rang" style="justify-content:center;margin-bottom:6px"><button class="btn btn-b" data-act="aujourdhui">Voir la journée d’aujourd’hui</button></div>`:''}
+    return enTete()+
+    `<div id="resumeVoyage">${resumeVoyage()}</div>
      <div class="regle"></div>
      <h2 class="titre">Le voyage</h2>
      ${bloc('Titre du carnet', champ('voyage.titre','Japon'))}
@@ -613,32 +800,326 @@ VUES.voyage = {
      ${ETOILE.replace('class="etoile"','class="etoile" style="right:22px;bottom:26px;transform:rotate(12deg)"')}`;
   },
   droite(){
-    return barreRetour()+`<h2 class="titre">Vols</h2>` + S.vols.map((v,i)=>`
-      <div style="margin-bottom:26px">
-        <h3 class="sous"><span class="surl surl-b">${E(v.sens)}</span></h3>
-        <div class="duo">
-          ${bloc('Compagnie', champ(`vols.${i}.cie`,'ex. ANA'))}
-          ${bloc('N° de vol', champ(`vols.${i}.num`,'ex. NH216'))}
-        </div>
-        <div class="duo" style="margin-top:10px">
-          ${bloc('De', champ(`vols.${i}.de`, i===0?'Paris CDG':'Tokyo HND'))}
-          ${bloc('Vers', champ(`vols.${i}.vers`, i===0?'Tokyo HND':'Paris CDG'))}
-        </div>
-        <div class="trio" style="margin-top:10px">
-          ${bloc('Date', champ(`vols.${i}.date`,'','date'))}
-          ${bloc('Décollage', champ(`vols.${i}.hDep`,'','time'))}
-          ${bloc('Atterrissage', champ(`vols.${i}.hArr`,'','time'))}
-        </div>
-        <div class="trio" style="margin-top:10px">
-          ${bloc('Terminal', champ(`vols.${i}.terminal`,'T2E'))}
-          ${bloc('Siège', champ(`vols.${i}.siege`,'32A'))}
-          ${bloc('Réservation', champ(`vols.${i}.ref`,'ABC123'))}
-        </div>
-        ${v.hDep?`<p class="main" style="margin:12px 0 0">à l’aéroport pour ${aeroport(v.hDep)} — 3 h avant</p>`:''}
-        <div style="margin-top:10px">${bloc('Notes', champ(`vols.${i}.notes`,'bagage, escale, repas…'))}</div>
-      </div>`).join('<div class="regle regle-b"></div>');
+    return barreRetour()+`<h2 class="titre">Vols</h2>`+
+      (S.vols.length
+        ? `<div class="billets">`+S.vols.map((v,i)=>billet(v,i,false)).join('')+`</div>`
+        : `<p class="vide"><b>Aucun vol pour l’instant.</b>Ajoute ton premier trajet : compagnie, numéro, horaires. Touche ensuite un billet pour l’ouvrir en grand.</p>`)+
+      `<div class="rang"><button class="btn btn-p" data-act="ajout-vol">+ Ajouter un vol</button></div>`;
   }
 };
+
+function resumeDuree(v){
+  const d=detailVol(v);
+  let t = d.duree
+    ? `Durée du vol : <b style="font-weight:400;color:var(--encre)">${d.duree}</b>`
+    : 'Renseigne les deux heures et la durée se calcule toute seule.';
+  if(v.hDep) t += ` · à l’aéroport pour ${aeroport(v.hDep)}`;
+  if(d.duree){
+    t += d.off1!=null&&d.off2!=null
+      ? `<br>Décalage pris en compte : ${utc(d.off1)} → ${utc(d.off2)}`
+      : `<br>Aéroport non reconnu : ajoute son code (CDG, HND…) au nom pour que le décalage soit appliqué.`;
+  }
+  return t;
+}
+function formulaireVol(i){
+  const v=S.vols[i]; if(!v) return '';
+  return `<div class="duo">
+      ${bloc('Compagnie', champ(`vols.${i}.cie`,'ex. Japan Airlines'))}
+      ${bloc('N° de vol', champ(`vols.${i}.num`,'ex. JL6906'))}
+    </div>
+    <div style="margin-top:10px">${bloc('Nom du passager', champ(`vols.${i}.passager`,'Marco'))}</div>
+    <div style="margin-top:10px">${bloc('Code de réservation (PNR)', champ(`vols.${i}.ref`,'EC8QSB'))}</div>
+    <div class="duo" style="margin-top:10px">
+      ${bloc('Aéroport de départ', champ(`vols.${i}.de`,'Paris CDG'))}
+      ${bloc('Terminal', champ(`vols.${i}.terminal`,'2B'))}
+    </div>
+    <div style="margin-top:10px">${bloc('Aéroport d’arrivée', champ(`vols.${i}.vers`,'Tokyo HND'))}</div>
+    <div class="trio" style="margin-top:10px">
+      ${bloc('Date', champ(`vols.${i}.date`,'','date'))}
+      ${bloc('Décollage', champ(`vols.${i}.hDep`,'','time'))}
+      ${bloc('Atterrissage', champ(`vols.${i}.hArr`,'','time'))}
+    </div>
+    <div style="margin-top:10px">${bloc('Valises autorisées', champ(`vols.${i}.bagages`,'ex. 2'))}</div>
+    <p class="mini" id="volDuree" style="margin-top:14px">${resumeDuree(v)}</p>
+    <div class="rang"><button class="btn" data-act="suppr-vol" data-i="${i}">Supprimer ce vol</button></div>`;
+}
+function ouvrirVol(i){
+  S.volOuvert=i;
+  const b=document.getElementById('plein');
+  document.getElementById('pleinBillet').innerHTML=billet(S.vols[i],i,true);
+  document.getElementById('pleinForm').innerHTML=formulaireVol(i);
+  b.hidden=false; document.body.classList.add('fige');
+}
+function fermerVol(){
+  S.volOuvert=null;
+  document.getElementById('plein').hidden=true;
+  document.body.classList.remove('fige');
+  rendre();
+}
+
+const MOIS_COURT=['JANV.','FÉVR.','MARS','AVR.','MAI','JUIN','JUIL.','AOÛT','SEPT.','OCT.','NOV.','DÉC.'];
+const TEINTES_BILLET=[
+  {bande:'#7FC8A9', clair:'#EAF6F0', encre:'#2E6B54'},
+  {bande:'#8FB8DC', clair:'#EBF2F9', encre:'#33587D'},
+  {bande:'#E8B48C', clair:'#FAF0E8', encre:'#8A5730'},
+  {bande:'#C0A8D8', clair:'#F2ECF8', encre:'#5C4380'}
+];
+function alea(txt){
+  let h=2166136261;
+  for(const c of String(txt||'billet')) h=Math.imul(h^c.charCodeAt(0),16777619)>>>0;
+  return ()=>{ h=(Math.imul(h,1103515245)+12345)>>>0; return h>>>16; };
+}
+function faussQR(txt,n=9){
+  const r=alea('qr'+txt); let g='';
+  for(let y=0;y<n;y++) for(let x=0;x<n;x++){
+    if((x<3&&y<3)||(x>=n-3&&y<3)||(x<3&&y>=n-3)) continue;
+    if(r()&1) g+=`<rect x="${x}" y="${y}" width="1" height="1"/>`;
+  }
+  const m=(x,y)=>`<rect x="${x+.25}" y="${y+.25}" width="2.5" height="2.5" fill="none" stroke="currentColor" stroke-width=".5"/><rect x="${x+1}" y="${y+1}" width="1" height="1"/>`;
+  return `<svg class="qr" viewBox="0 0 ${n} ${n}" fill="currentColor" aria-hidden="true">${g}${m(0,0)}${m(n-3,0)}${m(0,n-3)}</svg>`;
+}
+function codeBarre(txt){
+  const r=alea('cb'+txt); let x=0,g='';
+  while(x<100){ const w=r()%3+1; g+=`<rect x="${x}" y="0" width="${w}" height="24"/>`; x+=w+(r()%3+1); }
+  return `<svg class="cb" viewBox="0 0 100 24" preserveAspectRatio="none" fill="currentColor" aria-hidden="true">${g}</svg>`;
+}
+const FEUILLE=`<svg viewBox="0 0 100 100" aria-hidden="true"><path d="M84 16C52 16 24 34 20 66c0 0 34 22 58-4 16-17 12-34 6-46z" fill="none" stroke="currentColor" stroke-width="5"/><path d="M78 22C58 40 40 54 24 62" fill="none" stroke="currentColor" stroke-width="5"/></svg>`;
+function codeAero(nom){
+  const t=String(nom||'').match(/\b[A-Z]{3}\b/g);   // « Paris CDG » → CDG
+  if(t) return t[t.length-1];
+  const m=String(nom||'').replace(/[^A-Za-zÀ-ÿ]/g,'');
+  return m ? m.slice(0,3).toUpperCase() : '—';
+}
+/* Le voyageur saisit les heures telles qu'imprimées sur son billet, donc en
+   heure locale. Pour en tirer une durée juste, on retrouve le fuseau de chaque
+   aéroport et on repasse par UTC. Intl gère l'heure d'été à la date du vol. */
+const FUSEAUX={};
+const _fz=(zone,codes)=>codes.split(' ').forEach(c=>FUSEAUX[c]=zone);
+_fz('Europe/Paris','CDG ORY BVA LIL NCE LYS MRS TLS BOD NTE SXB MPL BIQ RNS BES CFE AJA BIA FSC');
+_fz('Europe/London','LHR LGW LTN STN LCY MAN EDI GLA BHX BRS NCL LPL');
+_fz('Europe/Dublin','DUB ORK SNN');
+_fz('Europe/Amsterdam','AMS EIN RTM');
+_fz('Europe/Brussels','BRU CRL ANR LGG');
+_fz('Europe/Luxembourg','LUX');
+_fz('Europe/Berlin','FRA MUC DUS BER HAM CGN STR TXL SXF HAJ NUE LEJ');
+_fz('Europe/Zurich','ZRH GVA BSL BRN');
+_fz('Europe/Vienna','VIE SZG INN');
+_fz('Europe/Copenhagen','CPH BLL');
+_fz('Europe/Oslo','OSL BGO TRD');
+_fz('Europe/Stockholm','ARN BMA GOT MMX');
+_fz('Europe/Helsinki','HEL OUL TMP');
+_fz('Europe/Warsaw','WAW WMI KRK GDN');
+_fz('Europe/Prague','PRG');
+_fz('Europe/Budapest','BUD');
+_fz('Europe/Madrid','MAD BCN AGP VLC SVQ BIO PMI ALC IBZ');
+_fz('Atlantic/Canary','TFS TFN LPA ACE FUE');
+_fz('Europe/Lisbon','LIS OPO FAO');
+_fz('Europe/Rome','FCO CIA MXP LIN BGY VCE NAP BLQ PSA TRN CTA PMO');
+_fz('Europe/Athens','ATH SKG HER JTR JMK RHO');
+_fz('Europe/Istanbul','IST SAW AYT ADB');
+_fz('Europe/Moscow','SVO DME VKO LED');
+_fz('Atlantic/Reykjavik','KEF RKV');
+_fz('Europe/Bucharest','OTP');
+_fz('Europe/Sofia','SOF');
+_fz('Europe/Zagreb','ZAG SPU DBV');
+_fz('Asia/Dubai','DXB DWC AUH SHJ');
+_fz('Asia/Qatar','DOH');
+_fz('Asia/Riyadh','RUH JED DMM');
+_fz('Asia/Kuwait','KWI');
+_fz('Asia/Muscat','MCT');
+_fz('Asia/Tel_Aviv','TLV');
+_fz('Asia/Tokyo','HND NRT KIX ITM UKB CTS FUK OKA NGO KMQ HIJ SDJ KMJ KOJ TAK MYJ AXT KIJ ISG NGS OIT TOY AOJ HKD ASJ MMY FSZ TKS KCZ OKJ YGJ IWJ MMJ SHM HSG');
+_fz('Asia/Seoul','ICN GMP PUS CJU TAE');
+_fz('Asia/Shanghai','PEK PKX PVG SHA CAN SZX CTU CKG XIY HGH NKG WUH TSN DLC SYX KMG');
+_fz('Asia/Hong_Kong','HKG');
+_fz('Asia/Macau','MFM');
+_fz('Asia/Taipei','TPE TSA KHH RMQ');
+_fz('Asia/Singapore','SIN');
+_fz('Asia/Bangkok','BKK DMK HKT CNX USM KBV');
+_fz('Asia/Ho_Chi_Minh','SGN HAN DAD CXR');
+_fz('Asia/Kuala_Lumpur','KUL PEN BKI');
+_fz('Asia/Manila','MNL CEB');
+_fz('Asia/Jakarta','CGK DPS SUB');
+_fz('Asia/Kolkata','DEL BOM BLR MAA HYD CCU COK GOI');
+_fz('Asia/Kathmandu','KTM');
+_fz('Asia/Colombo','CMB');
+_fz('Asia/Almaty','ALA NQZ');
+_fz('Asia/Baku','GYD');
+_fz('America/New_York','JFK EWR LGA BOS IAD DCA BWI PHL ATL MIA MCO FLL TPA CLT DTW PIT CLE CVG RDU BNA IND MSY');
+_fz('America/Chicago','ORD MDW DFW DAL IAH HOU AUS SAT MSP STL MCI MEM OKC OMA');
+_fz('America/Denver','DEN SLC PHX ABQ');
+_fz('America/Los_Angeles','LAX SFO SJC OAK SAN SEA PDX LAS SMF SNA BUR ONT');
+_fz('Pacific/Honolulu','HNL OGG KOA');
+_fz('America/Anchorage','ANC');
+_fz('America/Toronto','YYZ YUL YOW YTZ YHZ');
+_fz('America/Vancouver','YVR');
+_fz('America/Winnipeg','YWG');
+_fz('America/Edmonton','YYC YEG');
+_fz('America/Mexico_City','MEX CUN GDL');
+_fz('America/Sao_Paulo','GRU CGH GIG SDU BSB');
+_fz('America/Argentina/Buenos_Aires','EZE AEP');
+_fz('America/Santiago','SCL');
+_fz('America/Lima','LIM');
+_fz('America/Bogota','BOG');
+_fz('Australia/Sydney','SYD MEL CBR OOL BNE');
+_fz('Australia/Perth','PER');
+_fz('Australia/Adelaide','ADL');
+_fz('Pacific/Auckland','AKL CHC ZQN WLG');
+_fz('Pacific/Tahiti','PPT');
+_fz('Pacific/Noumea','NOU');
+_fz('Indian/Reunion','RUN');
+_fz('America/Guadeloupe','PTP');
+_fz('America/Martinique','FDF');
+_fz('America/Cayenne','CAY');
+_fz('Africa/Casablanca','CMN RAK AGA FEZ TNG');
+_fz('Africa/Tunis','TUN DJE');
+_fz('Africa/Algiers','ALG ORN CZL');
+_fz('Africa/Cairo','CAI HRG SSH');
+_fz('Africa/Johannesburg','JNB CPT DUR');
+_fz('Africa/Nairobi','NBO MBA');
+_fz('Africa/Addis_Ababa','ADD');
+_fz('Africa/Lagos','LOS ABV');
+_fz('Africa/Abidjan','ABJ ACC DKR');
+_fz('Africa/Douala','DLA NSI');
+_fz('Indian/Mauritius','MRU');
+_fz('Indian/Antananarivo','TNR');
+
+const VILLES_FUSEAU={
+  paris:'Europe/Paris', lille:'Europe/Paris', lyon:'Europe/Paris', marseille:'Europe/Paris',
+  toulouse:'Europe/Paris', bordeaux:'Europe/Paris', nantes:'Europe/Paris', nice:'Europe/Paris',
+  beauvais:'Europe/Paris', roissy:'Europe/Paris', orly:'Europe/Paris', gaulle:'Europe/Paris',
+  londres:'Europe/London', london:'Europe/London', heathrow:'Europe/London',
+  amsterdam:'Europe/Amsterdam', schiphol:'Europe/Amsterdam',
+  bruxelles:'Europe/Brussels', francfort:'Europe/Berlin', frankfurt:'Europe/Berlin',
+  munich:'Europe/Berlin', berlin:'Europe/Berlin', dusseldorf:'Europe/Berlin',
+  zurich:'Europe/Zurich', geneve:'Europe/Zurich', vienne:'Europe/Vienna',
+  copenhague:'Europe/Copenhagen', oslo:'Europe/Oslo', stockholm:'Europe/Stockholm',
+  helsinki:'Europe/Helsinki', varsovie:'Europe/Warsaw', prague:'Europe/Prague',
+  madrid:'Europe/Madrid', barcelone:'Europe/Madrid', lisbonne:'Europe/Lisbon', porto:'Europe/Lisbon',
+  rome:'Europe/Rome', milan:'Europe/Rome', venise:'Europe/Rome', naples:'Europe/Rome',
+  athenes:'Europe/Athens', istanbul:'Europe/Istanbul', moscou:'Europe/Moscow', reykjavik:'Atlantic/Reykjavik',
+  dubai:'Asia/Dubai', doha:'Asia/Qatar', abu:'Asia/Dubai', riyad:'Asia/Riyadh',
+  tokyo:'Asia/Tokyo', haneda:'Asia/Tokyo', narita:'Asia/Tokyo', osaka:'Asia/Tokyo',
+  kansai:'Asia/Tokyo', kyoto:'Asia/Tokyo', sapporo:'Asia/Tokyo', fukuoka:'Asia/Tokyo',
+  okinawa:'Asia/Tokyo', naha:'Asia/Tokyo', nagoya:'Asia/Tokyo', hiroshima:'Asia/Tokyo',
+  sendai:'Asia/Tokyo', kobe:'Asia/Tokyo', japon:'Asia/Tokyo',
+  seoul:'Asia/Seoul', incheon:'Asia/Seoul', pekin:'Asia/Shanghai', beijing:'Asia/Shanghai',
+  shanghai:'Asia/Shanghai', canton:'Asia/Shanghai', hong:'Asia/Hong_Kong', taipei:'Asia/Taipei',
+  singapour:'Asia/Singapore', singapore:'Asia/Singapore', bangkok:'Asia/Bangkok',
+  hanoi:'Asia/Ho_Chi_Minh', saigon:'Asia/Ho_Chi_Minh', kuala:'Asia/Kuala_Lumpur',
+  manille:'Asia/Manila', jakarta:'Asia/Jakarta', bali:'Asia/Jakarta', denpasar:'Asia/Jakarta',
+  delhi:'Asia/Kolkata', bombay:'Asia/Kolkata', mumbai:'Asia/Kolkata',
+  'new york':'America/New_York', newark:'America/New_York', boston:'America/New_York',
+  washington:'America/New_York', miami:'America/New_York', atlanta:'America/New_York',
+  montreal:'America/Toronto', toronto:'America/Toronto', vancouver:'America/Vancouver',
+  chicago:'America/Chicago', houston:'America/Chicago', dallas:'America/Chicago',
+  denver:'America/Denver', 'los angeles':'America/Los_Angeles', francisco:'America/Los_Angeles',
+  seattle:'America/Los_Angeles', vegas:'America/Los_Angeles', honolulu:'Pacific/Honolulu',
+  mexico:'America/Mexico_City', cancun:'America/Mexico_City', paulo:'America/Sao_Paulo',
+  janeiro:'America/Sao_Paulo', aires:'America/Argentina/Buenos_Aires', santiago:'America/Santiago',
+  sydney:'Australia/Sydney', melbourne:'Australia/Sydney', auckland:'Pacific/Auckland',
+  tahiti:'Pacific/Tahiti', papeete:'Pacific/Tahiti', noumea:'Pacific/Noumea',
+  reunion:'Indian/Reunion', denis:'Indian/Reunion', maurice:'Indian/Mauritius',
+  casablanca:'Africa/Casablanca', marrakech:'Africa/Casablanca', tunis:'Africa/Tunis',
+  alger:'Africa/Algiers', caire:'Africa/Cairo', johannesburg:'Africa/Johannesburg',
+  nairobi:'Africa/Nairobi', dakar:'Africa/Abidjan', abidjan:'Africa/Abidjan'
+};
+
+function fuseauDe(nom){
+  const s=String(nom||'');
+  for(const c of s.match(/\b[A-Za-z]{3}\b/g)||[]){
+    const z=FUSEAUX[c.toUpperCase()]; if(z) return z;
+  }
+  const n=s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  for(const v in VILLES_FUSEAU) if(n.includes(v)) return VILLES_FUSEAU[v];
+  return null;
+}
+function decalageZone(tz, quand){
+  try{
+    const f=new Intl.DateTimeFormat('en-US',{timeZone:tz,hour12:false,
+      year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
+    const p={}; for(const x of f.formatToParts(quand)) p[x.type]=x.value;
+    return Math.round((Date.UTC(+p.year,+p.month-1,+p.day,(+p.hour)%24,+p.minute)-quand.getTime())/60000);
+  }catch(e){ return null; }
+}
+function instantDe(tz,y,mo,d,h,mi){
+  const naif=Date.UTC(y,mo,d,h,mi);
+  if(!tz) return {t:naif, off:null};
+  let o=decalageZone(tz,new Date(naif));
+  if(o==null) return {t:naif, off:null};
+  o=decalageZone(tz,new Date(naif-o*60000));
+  return {t:naif-o*60000, off:o};
+}
+function detailVol(v){
+  const hm=h=>{const [a,b]=String(h||'').split(':').map(Number); return [a||0,b||0];};
+  if(!v.hDep||!v.hArr) return {duree:'', off1:null, off2:null, tz1:fuseauDe(v.de), tz2:fuseauDe(v.vers)};
+  const tz1=fuseauDe(v.de), tz2=fuseauDe(v.vers);
+  const base=dateDe(v.date)||new Date();
+  const y=base.getFullYear(), mo=base.getMonth(), d=base.getDate();
+  const [h1,m1]=hm(v.hDep), [h2,m2]=hm(v.hArr);
+  let dep, arr;
+  if(tz1&&tz2){
+    dep=instantDe(tz1,y,mo,d,h1,m1);
+    arr=instantDe(tz2,y,mo,d,h2,m2);
+  } else {
+    dep={t:Date.UTC(y,mo,d,h1,m1), off:null};
+    arr={t:Date.UTC(y,mo,d,h2,m2), off:null};
+  }
+  let ms=arr.t-dep.t, tours=0;
+  while(ms<=0 && tours<3){ ms+=86400000; tours++; }
+  const mn=Math.round(ms/60000), H=Math.floor(mn/60), M=mn%60;
+  return {duree:`${H} h${M?' '+String(M).padStart(2,'0'):''}`, off1:dep.off, off2:arr.off, tz1, tz2};
+}
+function dureeVol(v){ return detailVol(v).duree; }
+function utc(min){
+  if(min==null) return '';
+  const sg=min<0?'−':'+', a=Math.abs(min);
+  return `UTC${sg}${Math.floor(a/60)}${a%60?':'+String(a%60).padStart(2,'0'):''}`;
+}
+function dateBillet(d){
+  const x=dateDe(d); if(!x) return '—';
+  return `${x.getDate()} ${MOIS_COURT[x.getMonth()]} ${x.getFullYear()}`;
+}
+function billet(v,i,grand){
+  const t=TEINTES_BILLET[i%TEINTES_BILLET.length];
+  const ref=v.ref||v.num||('vol'+i);
+  const styleSouche='background:'+t.clair+';color:'+t.encre;
+  const duree=dureeVol(v);
+  const bag=nb(v.bagages);
+  const dedans=`
+    <div class="bl-main">
+      <div class="bl-bande" style="background:${t.bande}">
+        <span class="bl-rond">✈</span>
+        <div class="bl-tete">
+          <b>BILLET D’AVION</b>
+          <span class="bl-mini">Passager</span>
+          <span class="bl-nom">${E((v.passager||'—').toUpperCase())}</span>
+        </div>
+        <span class="bl-cie">${E(v.cie||'')}</span>
+      </div>
+      <div class="bl-corps">
+        <div class="bl-route"><span>${E(codeAero(v.de))}</span><i>→</i><span>${E(codeAero(v.vers))}</span></div>
+        <div class="bl-villes">${E(v.de||'départ')} · ${E(v.vers||'arrivée')}</div>
+        <div class="bl-grille">
+          <div><span class="bl-mini">N° de vol</span><b>${E(v.num||'—')}</b></div>
+          <div><span class="bl-mini">Date</span><b>${dateBillet(v.date)}</b></div>
+          <div><span class="bl-mini">Terminal</span><b>${E(v.terminal||'—')}</b></div>
+          <div><span class="bl-mini">Décollage</span><b>${E(v.hDep||'--:--')}</b></div>
+          <div><span class="bl-mini">Atterrissage</span><b>${E(v.hArr||'--:--')}</b></div>
+          <div><span class="bl-mini">Durée</span><b>${duree||'—'}</b></div>
+        </div>
+        <div class="bl-bas"><div class="bl-cb" style="color:${t.encre}">${codeBarre(ref)}</div></div>
+      </div>
+    </div>
+    <div class="bl-souche" style="${styleSouche}">
+      <span class="bl-feuille">${FEUILLE}</span>
+      <div><span class="bl-mini">Réservation</span><b class="bl-ref">${E(v.ref||'—')}</b></div>
+      <div><span class="bl-mini">Bagages</span><b>${bag?bag+(bag>1?' valises':' valise'):'—'}</b></div>
+      <div class="bl-qr">${faussQR(ref)}</div>
+    </div>`;
+  return grand ? `<div class="billet grand">${dedans}</div>`
+               : `<button class="billet" data-vol="${i}" aria-label="Ouvrir le billet ${E(v.num||'')}">${dedans}</button>`;
+}
 function aeroport(h){
   const [H,M]=h.split(':').map(Number);
   let t=H*60+M-180; if(t<0) t+=1440;
@@ -778,45 +1259,151 @@ VUES.valise = {
 
 /* --- 5. Budget --- */
 const CATS_DEP=['Transport','Hébergement','Repas','Visites','Achats','Autre'];
+const CAT_COULEUR={
+  'Transport':   {f:'#DCE7F3', t:'#436F97'},
+  'Hébergement': {f:'#DDE9DE', t:'#537E5B'},
+  'Repas':       {f:'#F6E5D6', t:'#A06D3C'},
+  'Visites':     {f:'#E6E0F0', t:'#6E589A'},
+  'Achats':      {f:'#F3DDE2', t:'#AE5A6E'},
+  'Autre':       {f:'#E7E3DB', t:'#6F6961'}
+};
+function totalDepenses(){ return S.depenses.reduce((a,d)=>a+nb(d.yen),0); }
+function resumeBudget(){
+  const tot=totalDepenses(), prevu=nb(S.budgetPrevu);
+  const pc=prevu?Math.min(100,Math.round(tot/prevu*100)):0;
+  return `<h2 class="titre">Dépensé</h2>
+    <div class="somme"><span class="gros">¥ ${fmt(tot)}</span><span class="eur">≈ ${eur(tot)} €</span></div>
+    ${prevu?`<div class="barre"><span style="width:${pc}%;background:${pc>90?'var(--sumi)':'var(--etoile)'}"></span></div>
+      <p class="mini">${pc}% du budget prévu · reste ¥ ${fmt(Math.max(0,prevu-tot))} (${eur(Math.max(0,prevu-tot))} €)</p>`:''}`;
+}
+function postesBudget(){
+  const parCat=CATS_DEP.map(c=>[c,S.depenses.filter(d=>d.cat===c).reduce((a,d)=>a+nb(d.yen),0)]).filter(x=>x[1]>0);
+  return `<h2 class="titre">Par poste</h2>`+(parCat.length
+    ? parCat.map(([c,v])=>{const k=CAT_COULEUR[c]||CAT_COULEUR.Autre;
+        return `<div class="pot"><span class="etiq etiq-fixe" style="background:${k.f};color:${k.t}">${E(c)}</span><span>¥ ${fmt(v)} <span class="mini">· ${eur(v)} €</span></span></div>`;}).join('')
+    : `<p class="vide"><b>Rien de dépensé pour l’instant.</b>Les postes se remplissent au fur et à mesure que tu notes tes dépenses.</p>`);
+}
+function majBudget(){
+  const a=document.getElementById('resumeBudget'); if(a) a.innerHTML=resumeBudget();
+  const b=document.getElementById('resumePostes'); if(b) b.innerHTML=postesBudget();
+}
 VUES.budget = {
   gauche(){
-    const tot=S.depenses.reduce((a,d)=>a+(+d.yen||0),0);
-    const prevu=+S.budgetPrevu||0;
-    const pc=prevu?Math.min(100,Math.round(tot/prevu*100)):0;
-    const parCat=CATS_DEP.map(c=>[c,S.depenses.filter(d=>d.cat===c).reduce((a,d)=>a+(+d.yen||0),0)]).filter(x=>x[1]>0);
-    return enTete()+`<h2 class="titre">Dépensé</h2>
-      <div class="somme"><span class="gros">¥ ${fmt(tot)}</span><span class="eur">≈ ${eur(tot)} €</span></div>
-      ${prevu?`<div class="barre"><span style="width:${pc}%;background:${pc>90?'#B4534A':'#9FB264'}"></span></div>
-        <p class="mini">${pc}% du budget prévu · reste ¥ ${fmt(Math.max(0,prevu-tot))} (${eur(Math.max(0,prevu-tot))} €)</p>`:''}
-      <div class="duo" style="margin-top:16px">
-        ${bloc('Budget prévu (¥)', champ('budgetPrevu','300000','number'))}
-        ${bloc('1 ¥ vaut … €', champ('taux','0.0060'))}
-      </div>
-      <div class="regle"></div>
-      <h2 class="titre">Par poste</h2>
-      ${parCat.length?parCat.map(([c,v])=>`<div class="pot"><span>${E(c)}</span><span>¥ ${fmt(v)} <span class="mini">· ${eur(v)} €</span></span></div>`).join('')
-        :`<p class="vide"><b>Rien de dépensé pour l’instant.</b>Les postes se remplissent au fur et à mesure que tu notes tes dépenses.</p>`}
-      ${ETOILE.replace('class="etoile"','class="etoile" style="right:24px;bottom:22px;transform:rotate(-14deg)"')}`;
+    return enTete()+
+      `<div id="resumeBudget">${resumeBudget()}</div>
+       <div class="duo" style="margin-top:16px">
+         ${bloc('Budget prévu (¥)', champ('budgetPrevu','300 000','text','num'))}
+         ${bloc('1 ¥ vaut … €', champ('taux','0,00539','text','num'))}
+       </div>
+       <div class="regle"></div>
+       <div id="resumePostes">${postesBudget()}</div>
+       ${ETOILE.replace('class="etoile"','class="etoile" style="right:24px;bottom:22px;transform:rotate(-14deg)"')}`;
   },
   droite(){
-    return barreRetour()+`<h2 class="titre">Le carnet de dépenses</h2>
-      <div class="ligne-dep mini" style="border-bottom:1px solid #D3E0EA;padding-bottom:6px;margin-bottom:6px">
-        <span>Quoi</span><span class="yen">Yens</span><span></span>
-      </div>
-      ${S.depenses.map((d,i)=>`
-        <div class="ligne-dep">
-          <input data-lie="depenses.${i}.label" value="${E(d.label)}" placeholder="ex. Shinkansen Tokyo–Kyoto">
-          <input class="yen" data-lie="depenses.${i}.yen" value="${E(d.yen)}" inputmode="numeric" placeholder="0">
-          <button class="sup" data-act="suppr-dep" data-i="${i}" aria-label="Supprimer">×</button>
-          <select class="champ" data-lie="depenses.${i}.cat" style="grid-column:1/3;font-size:14.5px;color:#8A8478;border-bottom:none;padding:0 0 8px">
-            ${CATS_DEP.map(c=>`<option ${d.cat===c?'selected':''}>${c}</option>`).join('')}
-          </select>
-        </div>`).join('')||`<p class="vide"><b>Le carnet est vierge.</b>Note ici chaque dépense en yens, la conversion se fait à côté.</p>`}
-      <div class="rang"><button class="btn btn-p" data-act="ajout-dep">+ Ajouter une dépense</button></div>`;
+    return barreRetour()+`<h2 class="titre">Le carnet de dépenses</h2>`+
+      (S.depenses.length ? S.depenses.map((d,i)=>{
+        const k=CAT_COULEUR[d.cat]||CAT_COULEUR.Autre, y=nb(d.yen);
+        return `<div class="dep">
+          <div class="dep-tete">
+            <span class="etiq" style="background:${k.f};color:${k.t}">${E(d.cat||'Autre')}
+              <select data-lie="depenses.${i}.cat" aria-label="Catégorie">${CATS_DEP.map(c=>`<option ${d.cat===c?'selected':''}>${c}</option>`).join('')}</select>
+            </span>
+            <input class="dep-date" data-lie="depenses.${i}.date" value="${E(d.date||'')}" placeholder="jj/mm/aaaa" inputmode="numeric" aria-label="Date">
+            <button class="sup" data-act="suppr-dep" data-i="${i}" aria-label="Supprimer">×</button>
+          </div>
+          <div class="dep-corps">
+            <input class="dep-label" data-lie="depenses.${i}.label" value="${E(d.label)}" placeholder="ex. Shinkansen Tokyo–Kyoto">
+            <input class="dep-yen" data-lie="depenses.${i}.yen" value="${E(d.yen)}" inputmode="numeric" placeholder="0" aria-label="Montant en yens"><i>¥</i>
+          </div>
+          ${y?`<div class="dep-eur">≈ ${eur(y)} €</div>`:''}
+        </div>`;
+      }).join('') : `<p class="vide"><b>Le carnet est vierge.</b>Note ici chaque dépense en yens, la conversion se fait sur la page d’à côté.</p>`)+
+      `<div class="rang"><button class="btn btn-p" data-act="ajout-dep">+ Ajouter une dépense</button></div>`;
   }
 };
+
+/* lecture tolérante d'un nombre saisi à la main : « 50 000 », « 0,00539 » */
+const nb = v => {
+  const x = parseFloat(String(v==null?'':v).replace(/[^\d,.-]/g,'').replace(',','.'));
+  return isNaN(x) ? 0 : x;
+};
+function jjmmaaaa(d){
+  return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear();
+}
 const fmt = n => (Math.round(n)||0).toLocaleString('fr-FR');
-const eur = n => (n*(parseFloat(String(S.taux).replace(',','.'))||0.006)).toLocaleString('fr-FR',{maximumFractionDigits:0});
+const eur = n => (n*(nb(S.taux)||0.00539)).toLocaleString('fr-FR',{maximumFractionDigits:0});
+
+/* --- Avant de partir --- */
+function echeance(j){
+  const d=dateDe(S.voyage.depart); if(!d) return null;
+  const x=new Date(d); x.setDate(d.getDate()-Math.round(nb(j))); return x;
+}
+function etatPrep(p){
+  if(p.f) return ['fait','fait'];
+  const e=echeance(p.j); if(!e) return ['',''];
+  const r=joursEntre(aujourdhui(), iso(e));
+  if(r<0)  return ['retard','en retard'];
+  if(r===0)return ['bientot','aujourd’hui'];
+  if(r<=7) return ['bientot', r===1?'demain':`dans ${r} jours`];
+  return ['',''];
+}
+function compteurPrep(){
+  const t=S.prepa.length, f=S.prepa.filter(p=>p.f).length;
+  const tard=S.prepa.filter(p=>!p.f && etatPrep(p)[0]==='retard').length;
+  return `${f} sur ${t} fait${f>1?'s':''}${tard?` · <b style="color:var(--sumi);font-weight:400">${tard} en retard</b>`:''}`;
+}
+function majPrep(){
+  const c=document.getElementById('prepCompte');
+  if(c) c.innerHTML=compteurPrep();
+}
+
+VUES.avant = {
+  gauche(){
+    const ordre=S.prepa.map((p,i)=>({p,i})).sort((a,b)=>nb(b.p.j)-nb(a.p.j));
+    return enTete()+
+      `<h2 class="titre">Le compte à rebours</h2>
+       <p class="mini" id="prepCompte">${compteurPrep()}</p>
+       ${S.voyage.depart?'':'<p class="vide" style="padding:10px 0"><b>Renseigne ta date de départ.</b>Les échéances se calculeront toutes seules.</p>'}
+       <div style="margin-top:12px">`+
+      ordre.map(({p,i})=>{
+        const [cls,txt]=etatPrep(p), e=echeance(p.j);
+        return `<div class="coche prep ${cls}">
+          <button class="case" role="checkbox" aria-checked="${p.f}" data-coche="prepa.${i}" aria-label="Fait"></button>
+          <div class="prep-corps">
+            <input class="prep-t" data-lie="prepa.${i}.t" value="${E(p.t)}" placeholder="…">
+            <div class="prep-bas">
+              <span class="prep-j">J−<input class="prep-jn" data-lie="prepa.${i}.j" value="${E(p.j)}" inputmode="numeric" aria-label="Jours avant le départ"></span>
+              ${e?`<span class="prep-d">${e.getDate()} ${MOIS_FR[e.getMonth()]}</span>`:''}
+              ${txt?`<span class="prep-etat">${txt}</span>`:''}
+            </div>
+          </div>
+          <button class="sup" data-act="suppr-prep" data-i="${i}" aria-label="Supprimer">×</button>
+        </div>`;
+      }).join('')+
+      `</div><div class="rang"><button class="btn" data-act="ajout-prep">+ Ajouter une échéance</button></div>`;
+  },
+  droite(){
+    return barreRetour()+`<h2 class="titre">Mes documents</h2>
+      <p class="mini" style="margin-bottom:14px">De quoi retrouver un numéro en cas de perte. N’y note aucun mot de passe.</p>
+      <div class="duo">
+        ${bloc('N° de passeport', champ('docs.passeport','12AB34567'))}
+        ${bloc('Expire le', champ('docs.expiration','','date'))}
+      </div>
+      <h3 class="sous">Assurance</h3>
+      <div class="duo">
+        ${bloc('Compagnie', champ('docs.assurance','ex. Chapka'))}
+        ${bloc('N° de police', champ('docs.police',''))}
+      </div>
+      <div style="margin-top:10px">${bloc('Téléphone d’assistance', champ('docs.telAssur','+33 …'))}</div>
+      <h3 class="sous">En cas de perte</h3>
+      ${bloc('Opposition carte bancaire', champ('docs.opposition','+33 …'))}
+      <h3 class="sous">Comptes du voyage</h3>
+      ${bloc('Visit Japan Web — e-mail du compte', champ('docs.vjw','moi@exemple.fr'))}
+      <div style="margin-top:10px">${bloc('eSIM / pocket wifi — référence', champ('docs.esim',''))}</div>
+      <div style="margin-top:10px">${bloc('Qui prévenir en France', champ('docs.contact','nom et téléphone'))}</div>
+      <div style="margin-top:16px">${bloc('Autres références', zone('docs.notes','numéros de réservation, codes…'))}</div>`;
+  }
+};
 
 /* --- 6. Infos --- */
 VUES.infos = {
@@ -855,13 +1442,13 @@ function rendreGauche(){ document.getElementById('pg').innerHTML = VUES[S.sectio
 function onglets(){
   document.getElementById('onglets').innerHTML = SECTIONS.map(s=>{
     const on=s.id===S.section;
-    return `<button class="onglet ${on?'on':''}" data-sec="${s.id}" style="${on?'':`background:${s.teinte}`}">${ICONES[s.id]}<span>${E(s.nom)}</span></button>`;
-  }).join('') + ONGLET_FERMER.replace('onglet-x','onglet onglet-x');
+    return `<span class="onglet-o"><button class="onglet ${on?'on':''}" data-sec="${s.id}" style="${on?'':`--tt:${s.teinte}`}">${ICONES[s.id]}<span>${E(s.nom)}</span></button></span>`;
+  }).join('') + `<span class="onglet-o">${ONGLET_FERMER.replace('onglet-x','onglet onglet-x')}</span>`;
 }
 function barreBas(){
   document.getElementById('barreBas').innerHTML = SECTIONS.map(s=>{
     const on=s.id===S.section;
-    return `<button class="${on?'on':''}" data-sec="${s.id}" style="${on?'':`background:${s.teinte}`}">${ICONES[s.id]}<span>${E(s.nom)}</span></button>`;
+    return `<button class="${on?'on':''}" data-sec="${s.id}" style="${on?'':`--tt:${s.teinte}`}">${ICONES[s.id]}<span>${E(s.nom)}</span></button>`;
   }).join('') + ONGLET_FERMER;
 }
 function appliquerPalette(){
@@ -906,11 +1493,42 @@ document.addEventListener('input', e=>{
 });
 function majDouce(ch){
   const s=S.section;
-  if(s==='budget'&&(ch.startsWith('depenses')||ch==='taux'||ch==='budgetPrevu')) rendreGauche();
-  if(s==='voyage'&&(ch==='voyage.depart'||ch==='voyage.retour')) rendreGauche();
+  if(S.volOuvert!=null && ch.startsWith('vols.')){
+    const i=S.volOuvert, v=S.vols[i];
+    document.getElementById('pleinBillet').innerHTML=billet(v,i,true);
+    const p=document.getElementById('volDuree');
+    if(p) p.innerHTML=resumeDuree(v);
+    return;
+  }
+  if(s==='budget'&&ch.startsWith('depenses')&&ch.endsWith('.cat')){
+    const pd=document.getElementById('pd'), y=pd.scrollTop;
+    rendre(); pd.scrollTop=y; return;
+  }
+  if(s==='budget'&&(ch.startsWith('depenses')||ch==='taux'||ch==='budgetPrevu')){
+    majBudget();
+    if(ch.endsWith('.yen')){
+      const f=document.querySelector(`[data-lie="${ch}"]`);
+      const e=f&&f.parentElement.parentElement.querySelector('.dep-eur');
+      if(e) e.textContent='≈ '+eur(nb(f.value))+' €';
+    }
+    return;
+  }
+  if(s==='voyage'&&(ch==='voyage.depart'||ch==='voyage.retour')){
+    const r=document.getElementById('resumeVoyage'); if(r) r.innerHTML=resumeVoyage();
+  }
   if(s==='itineraire'&&ch.endsWith('.titre')) rendreGauche();
   if(s==='hotels'&&(ch.endsWith('.nom')||ch.endsWith('.ville'))) rendreGauche();
   if(s==='valise'&&ch.endsWith('.cat')) rendreGauche();
+  if(s==='avant'&&ch.startsWith('prepa')&&ch.endsWith('.j')){
+    const f=document.querySelector(`[data-lie="${ch}"]`), l=f&&f.closest('.prep');
+    if(l){
+      const p=lire(ch.replace(/\.j$/,'')), e=echeance(p.j), [cls,txt]=etatPrep(p);
+      l.className='coche prep '+cls;
+      const d=l.querySelector('.prep-d'); if(d&&e) d.textContent=`${e.getDate()} ${MOIS_FR[e.getMonth()]}`;
+      const t=l.querySelector('.prep-etat'); if(t) t.textContent=txt;
+      majPrep();
+    }
+  }
   if(ch.startsWith('voyage.')) majCouverture();
 }
 
@@ -924,8 +1542,10 @@ document.addEventListener('click', e=>{
     b.setAttribute('aria-checked',o.f);
     b.closest('.coche').classList.toggle('fait',o.f);
     if(S.section==='itineraire'||S.section==='valise') rendreGauche();
+    if(S.section==='avant'){ b.closest('.prep').className='coche prep '+etatPrep(lire(b.dataset.coche))[0]; majPrep(); }
     return;
   }
+  if(b.dataset.vol){ ouvrirVol(+b.dataset.vol); return; }
   if(b.dataset.jour){ S.jourActif=b.dataset.jour; S.vue='fiche'; sauver(); rendre(); hautDePage(); return; }
   if(b.dataset.hotel){ S.hotelActif=+b.dataset.hotel; S.vue='fiche'; sauver(); rendre(); hautDePage(); return; }
   if(b.dataset.valise){ S.valiseActive=+b.dataset.valise; S.vue='fiche'; sauver(); rendre(); hautDePage(); return; }
@@ -958,17 +1578,34 @@ document.addEventListener('click', e=>{
   if(a==='suppr-cat'){ if(!confirm('Supprimer la catégorie et son contenu ?')) return; S.valise.splice(+b.dataset.c,1); S.valiseActive=0; S.vue='liste'; }
   if(a==='ajout-valise'){ S.valise[+b.dataset.c].items.push({t:'',f:false}); }
   if(a==='suppr-valise'){ S.valise[+b.dataset.c].items.splice(+b.dataset.i,1); }
-  if(a==='ajout-dep'){ S.depenses.push({label:'',yen:'',cat:'Repas'}); }
+  if(a==='fermer-vol'){ fermerVol(); return; }
+  if(a==='ajout-vol'){
+    const p=S.vols.length?S.vols[S.vols.length-1].passager||'':'';
+    S.vols.push({cie:'',num:'',passager:p,ref:'',de:'',vers:'',terminal:'',date:'',hDep:'',hArr:'',bagages:''});
+    sauver(); rendre(); ouvrirVol(S.vols.length-1); return;
+  }
+  if(a==='suppr-vol'){
+    if(!confirm('Supprimer ce vol ?')) return;
+    S.vols.splice(+b.dataset.i,1); sauver(); fermerVol(); return;
+  }
+  if(a==='ajout-prep'){ S.prepa.push({j:30,t:'',f:false}); }
+  if(a==='suppr-prep'){ S.prepa.splice(+b.dataset.i,1); }
+  if(a==='ajout-dep'){ S.depenses.push({label:'',yen:'',cat:'Repas',date:jjmmaaaa(new Date())}); }
   if(a==='suppr-dep'){ S.depenses.splice(+b.dataset.i,1); }
   sauver(); rendre();
+  if(a==='ajout-prep'){
+    const c=document.querySelector(`[data-lie="prepa.${S.prepa.length-1}.t"]`);
+    if(c){ c.focus(); c.scrollIntoView({block:'center'}); }
+  }
   if(a==='ajout-item'||a==='ajout-valise'||a==='ajout-dep'){
     const champs=[...document.querySelectorAll('#pd input[data-lie]')].filter(c=>c.type==='text');
-    const der = a==='ajout-dep' ? champs[champs.length-2] : champs[champs.length-1];
+    const der = a==='ajout-dep' ? document.querySelector(`[data-lie="depenses.${S.depenses.length-1}.label"]`) : champs[champs.length-1];
     if(der){ der.focus(); der.scrollIntoView({block:'center'}); }
   }
 });
 
 document.addEventListener('keydown', e=>{
+  if(e.key==='Escape' && S.volOuvert!=null){ fermerVol(); return; }
   if(e.key===' '&&e.target.classList.contains('case')){ e.preventDefault(); e.target.click(); }
   if(e.key==='Enter'&&e.target.classList.contains('txt')){
     e.preventDefault();
