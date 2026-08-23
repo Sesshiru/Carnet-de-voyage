@@ -48,7 +48,7 @@ body{
     var(--fond);
   background-attachment:fixed;
   -webkit-font-smoothing:antialiased;
-  padding:calc(18px + env(safe-area-inset-top)) 14px 100px;
+  padding:calc(18px + env(safe-area-inset-top)) 14px 30px;
   min-height:100vh;
   -webkit-text-size-adjust:100%;
   font-synthesis-weight:none;
@@ -61,7 +61,7 @@ input,textarea,select{font:inherit;color:inherit;border-radius:0}
   max-width:1180px;margin:0 auto;position:relative;
   display:grid;grid-template-columns:1fr 1fr;gap:6px;align-items:stretch;
   grid-auto-rows:1fr;
-  height:calc(100vh - 136px);height:calc(100dvh - 136px);min-height:460px;
+  height:calc(100vh - 56px);height:calc(100dvh - 56px);min-height:460px;
   padding-right:66px;
 }
 .page{
@@ -97,6 +97,8 @@ input,textarea,select{font:inherit;color:inherit;border-radius:0}
   transition:transform .16s ease, background .16s ease, color .16s ease;
 }
 .ico{display:block;width:20px;height:20px;margin:0 0 4px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.ico-rouge{stroke:#C0564C;stroke-width:1.8}
+.onglet-x{color:#A5574F}
 .onglet:hover{transform:translateX(3px)}
 .onglet.on{background:var(--papier);color:var(--encre);transform:translateX(6px);box-shadow:3px 3px 8px rgba(58,55,51,.14)}
 .onglet:focus-visible{outline:2px solid var(--bleu);outline-offset:2px}
@@ -210,14 +212,12 @@ input[type=date].champ,input[type=time].champ{min-height:32px}
 
 .vide{color:var(--encre-pale);font-size:17px;line-height:1.6;padding:18px 0}
 .vide b{display:block;color:var(--encre);font-weight:400;margin-bottom:3px}
-.outils{max-width:1180px;margin:16px auto 0;display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
 .barre-bas{display:none}
 
 /* ---------- couverture ---------- */
 .couv{position:fixed;inset:0;z-index:40;display:grid;place-items:center;padding:calc(26px + env(safe-area-inset-top)) 20px 26px;overflow:auto}
 body.ouvert .couv{display:none}
 body:not(.ouvert) .carnet,
-body:not(.ouvert) .outils,
 body:not(.ouvert) .barre-bas{display:none}
 .livre{
   position:relative;width:min(356px,84vw);aspect-ratio:3/4.15;
@@ -267,6 +267,8 @@ body:not(.ouvert) .barre-bas{display:none}
   letter-spacing:.14em;text-transform:uppercase;color:var(--encre-pale);margin-bottom:10px;
 }
 .nuancier{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.opt-lbl2{margin-top:17px}
+.opt-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
 .pastille-c{
   width:34px;height:34px;border-radius:50%;padding:0;position:relative;
   border:1px solid rgba(69,63,55,.16);transition:transform .14s ease;
@@ -314,10 +316,10 @@ body:not(.ouvert) .barre-bas{display:none}
   .jour{padding:14px 6px}
 
   .barre-bas{
-    display:flex;align-items:flex-end;gap:4px;
+    display:flex;align-items:flex-end;gap:3px;
     position:fixed;left:0;right:0;bottom:0;z-index:20;
     background:linear-gradient(to top, var(--fond) 76%, rgba(239,233,220,0));
-    padding:14px 7px calc(6px + env(safe-area-inset-bottom));
+    padding:14px 5px calc(6px + env(safe-area-inset-bottom));
   }
   .barre-bas button{
     flex:1;border:none;border-radius:13px 13px 5px 5px;
@@ -329,6 +331,7 @@ body:not(.ouvert) .barre-bas{display:none}
     transition:transform .16s ease, box-shadow .16s ease;
   }
   .barre-bas .ico{width:21px;height:21px;margin:0 auto 4px}
+  .barre-bas .onglet-x{color:#A5574F}
   .barre-bas button.on{
     background:var(--papier);color:var(--encre);
     transform:translateY(0);box-shadow:0 -4px 10px -2px rgba(58,55,51,.18);
@@ -358,6 +361,12 @@ body:not(.ouvert) .barre-bas{display:none}
     <div class="opt-corps">
       <span class="opt-lbl">Couleur du carnet</span>
       <div class="nuancier" id="nuancier"></div>
+      <span class="opt-lbl opt-lbl2">Sauvegarde</span>
+      <div class="opt-actions">
+        <button class="btn" id="exporter">Enregistrer</button>
+        <button class="btn" id="importer">Charger</button>
+      </div>
+      <input type="file" id="fichier" accept="application/json" hidden>
     </div>
   </div>
 </div>
@@ -365,13 +374,6 @@ body:not(.ouvert) .barre-bas{display:none}
 <div class="carnet" id="carnet">
   <section class="page page-g"><div class="feuille" id="pg"></div></section>
   <section class="page page-d"><nav class="onglets" id="onglets"></nav><div class="feuille" id="pd"></div></section>
-</div>
-
-<div class="outils">
-  <button class="btn" id="exporter">Enregistrer une sauvegarde</button>
-  <button class="btn" id="importer">Charger une sauvegarde</button>
-  <button class="btn" id="fermer">Fermer le carnet</button>
-  <input type="file" id="fichier" accept="application/json" hidden>
 </div>
 
 <nav class="barre-bas" id="barreBas"></nav>
@@ -398,8 +400,10 @@ const ICONES = {
   itineraire:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.6 5.4h18.8"/><path d="M4.6 8.6h14.8"/><path d="M7.2 5.4v14.2"/><path d="M16.8 5.4v14.2"/></svg>`,
   valise:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.4" y="7.8" width="17.2" height="12" rx="2"/><path d="M9.2 7.8V5.6h5.6v2.2"/><path d="M3.4 13.8h17.2"/></svg>`,
   budget:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M7.6 4.8 12 11.4l4.4-6.6"/><path d="M12 11.4v7.8"/><path d="M8.2 13.4h7.6"/><path d="M8.2 16.4h7.6"/></svg>`,
-  infos:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.2 12.4a8.8 8.8 0 0 1 17.6 0z"/><path d="M12 12.4v5.6a2.2 2.2 0 0 0 4.4 0"/><path d="M12 3.6v1.2"/></svg>`
+  infos:`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.2 12.4a8.8 8.8 0 0 1 17.6 0z"/><path d="M12 12.4v5.6a2.2 2.2 0 0 0 4.4 0"/><path d="M12 3.6v1.2"/></svg>`,
+  fermer:`<svg class="ico ico-rouge" viewBox="0 0 24 24" aria-hidden="true"><path d="M5.6 5.6 18.4 18.4"/><path d="M18.4 5.6 5.6 18.4"/></svg>`
 };
+const ONGLET_FERMER = `<button class="onglet-x" data-act="fermer-carnet" style="background:#F3DCD9">${ICONES.fermer}<span>Fermer</span></button>`;
 const FICHES = [
   {cle:'transport', t:'Se déplacer'},
   {cle:'argent',    t:'Argent'},
@@ -852,13 +856,13 @@ function onglets(){
   document.getElementById('onglets').innerHTML = SECTIONS.map(s=>{
     const on=s.id===S.section;
     return `<button class="onglet ${on?'on':''}" data-sec="${s.id}" style="${on?'':`background:${s.teinte}`}">${ICONES[s.id]}<span>${E(s.nom)}</span></button>`;
-  }).join('');
+  }).join('') + ONGLET_FERMER.replace('onglet-x','onglet onglet-x');
 }
 function barreBas(){
   document.getElementById('barreBas').innerHTML = SECTIONS.map(s=>{
     const on=s.id===S.section;
     return `<button class="${on?'on':''}" data-sec="${s.id}" style="${on?'':`background:${s.teinte}`}">${ICONES[s.id]}<span>${E(s.nom)}</span></button>`;
-  }).join('');
+  }).join('') + ONGLET_FERMER;
 }
 function appliquerPalette(){
   const pal=PALETTES.find(p=>p.id===S.livre)||PALETTES[0];
@@ -928,6 +932,9 @@ document.addEventListener('click', e=>{
 
   const a=b.dataset.act;
   if(!a) return;
+  if(a==='fermer-carnet'){
+    majCouverture(); document.body.classList.remove('ouvert'); hautDePage(); return;
+  }
   if(a==='options'){
     const o=document.getElementById('options');
     b.setAttribute('aria-expanded', o.classList.toggle('ouvert'));
@@ -1009,9 +1016,6 @@ document.getElementById('livre').addEventListener('click', ()=>{
   if(enVoyage()){ S.section='itineraire'; S.jourActif=aujourdhui(); S.vue='fiche'; }
   document.body.classList.add('ouvert');
   sauver(); rendre(); hautDePage();
-});
-document.getElementById('fermer').addEventListener('click', ()=>{
-  majCouverture(); document.body.classList.remove('ouvert'); hautDePage();
 });
 
 /* ---------- sauvegarde ---------- */
